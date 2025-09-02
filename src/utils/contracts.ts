@@ -6,7 +6,7 @@
 
 // Contract addresses from environment
 export const CONTRACTS = {
-  GEO_ART: process.env.NEXT_PUBLIC_GEO_ART_CONTRACT_ADDRESS as `0x${string}`,
+  GEO_ART: process.env.NEXT_PUBLIC_GEO_ART_DROP_ADDRESS as `0x${string}`,
 } as const
 
 // Network configuration
@@ -61,7 +61,7 @@ export const getRarityBgColor = (rarity: number): string => {
 
 // Validation
 if (!CONTRACTS.GEO_ART) {
-  throw new Error('NEXT_PUBLIC_GEO_ART_CONTRACT_ADDRESS is required')
+  throw new Error('NEXT_PUBLIC_GEO_ART_DROP_ADDRESS is required')
 }
 
 // Type exports

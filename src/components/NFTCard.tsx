@@ -20,7 +20,7 @@ import { boosterDropV2Abi } from "@/abi/IBoosterDropV2ABI";
 import { boosterTokenV2Abi } from "@/abi/IBoosterTokenV2ABI";
 import { formatEther } from "viem";
 import { fetchETHPrice } from "@/utils/api";
-import { SellButton } from "./sell/SellButton";
+import { VibeMarketRedirectButton } from "./sell/VibeMarketRedirectButton";
 
 interface NFTItem {
   id: string;
@@ -354,19 +354,9 @@ export function NFTCard({
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
-                      {/* SELL Button - Available for ALL NFTs (using new SellButton component) */}
-                      <SellButton
+                      {/* SELL Button - Redirects to VibeMarket */}
+                      <VibeMarketRedirectButton
                         nft={nft}
-                        sellPrice={formatSellPrice() || undefined}
-                        onSuccess={() => {
-                          if (onTransactionSuccess) {
-                            onTransactionSuccess();
-                          }
-                        }}
-                        onError={(error) => {
-                          console.error("Sell error in NFTCard:", error);
-                          // Error display is handled by SellButton component
-                        }}
                         className="px-2 py-1"
                       />
 

@@ -1,11 +1,8 @@
 export const siteMenu = [
   
   {
-    label: "Upload & Deploy",
-    href: "/vibeloader",
+    label: "Gallery",
+    href: "/gallery",
   },
-  {
-    label: "(comming soon)",
-    href: "",
-  },
+  
 ];

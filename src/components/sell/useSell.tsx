@@ -79,8 +79,8 @@ export const useSell = () => {
     setCurrentStep('step2');
     
     try {
-      // Calculate minimum payout (2% slippage)
-      const minPayout = (tokenAmount * BigInt(98)) / BigInt(100);
+      // Calculate minimum payout (5% slippage)
+      const minPayout = (tokenAmount * BigInt(95)) / BigInt(100);
       
       await writeContract({
         address: tokenAddress as `0x${string}`,

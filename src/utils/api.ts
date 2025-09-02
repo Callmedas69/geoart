@@ -485,7 +485,7 @@ function getFallbackContractInfo(): ContractInfo {
   
   // Import CONTRACTS here to avoid circular dependency
   const CONTRACTS_LOCAL = {
-    GEO_ART: process.env.NEXT_PUBLIC_GEO_ART_CONTRACT_ADDRESS as `0x${string}`,
+    GEO_ART: process.env.NEXT_PUBLIC_GEO_ART_DROP_ADDRESS as `0x${string}`,
   }
   
   return {

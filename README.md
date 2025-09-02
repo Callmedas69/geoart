@@ -13,7 +13,7 @@ A professional NFT collection platform built on Base network, enabling users to 
 
 ## Tech Stack
 
-- **Next.js 14** - App Router with TypeScript
+- **Next.js 15** - App Router with TypeScript
 - **Wagmi** - Ethereum library for React
 - **RainbowKit** - Wallet connection interface
 - **Tailwind CSS** - Utility-first styling

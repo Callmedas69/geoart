@@ -6,7 +6,7 @@ export function VibeMarketReferralButton() {
   const handleDeploy = () => {
     const referralCode =
       process.env.NEXT_PUBLIC_VIBEMARKET_REFERRAL || "C8475MDMBEAM";
-    const vibeMarketUrl = `https://vibemarket.com/deploy?ref=${referralCode}`;
+    const vibeMarketUrl = `https://vibechain.com/market?ref=${referralCode}`;
 
     window.open(vibeMarketUrl, "_blank", "noopener,noreferrer");
   };
@@ -15,7 +15,7 @@ export function VibeMarketReferralButton() {
     <Button
       size="sm"
       onClick={handleDeploy}
-      className="text-sm font-medium border-primary/20 hover:border-primary hover:bg-primary/5"
+      className="text-sm font-medium cursor-pointer border-primary/20 hover:border-primary"
     >
       Deploy Collection
     </Button>
