@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useReadContract,
+} from "wagmi";
 import { fetchUserNFTs } from "@/utils/api";
 import { CONTRACTS } from "@/utils/contracts";
 import { boosterDropV2Abi } from "@/abi/IBoosterDropV2ABI";
@@ -66,14 +71,16 @@ export function YourNFTs() {
   const [selectedNFTs, setSelectedNFTs] = useState<Set<string>>(new Set());
   const [batchMode, setBatchMode] = useState(false);
   const [showBatchConfirm, setShowBatchConfirm] = useState(false);
-  const [pendingBatchAction, setPendingBatchAction] = useState<"sell" | "unpack" | null>(null);
-  
+  const [pendingBatchAction, setPendingBatchAction] = useState<
+    "sell" | "unpack" | null
+  >(null);
+
   // Sequential batch sell state
   const [batchSellQueue, setBatchSellQueue] = useState<NFTItem[]>([]);
   const [currentBatchIndex, setCurrentBatchIndex] = useState(0);
   const [batchSellInProgress, setBatchSellInProgress] = useState(false);
   const [currentBatchStep, setCurrentBatchStep] = useState<1 | 2>(1); // Track if we're on step 1 (sell) or step 2 (convert)
-  
+
   // Refresh state
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -158,7 +165,7 @@ export function YourNFTs() {
 
   // Batch operations helpers
   const toggleNFTSelection = (nftId: string) => {
-    setSelectedNFTs(prev => {
+    setSelectedNFTs((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(nftId)) {
         newSet.delete(nftId);
@@ -170,7 +177,7 @@ export function YourNFTs() {
   };
 
   const selectAllNFTs = () => {
-    setSelectedNFTs(new Set(nfts.map(nft => nft.id)));
+    setSelectedNFTs(new Set(nfts.map((nft) => nft.id)));
   };
 
   const clearSelection = useCallback(() => {
@@ -178,11 +185,11 @@ export function YourNFTs() {
   }, []);
 
   const getSelectedNFTs = () => {
-    return nfts.filter(nft => selectedNFTs.has(nft.id));
+    return nfts.filter((nft) => selectedNFTs.has(nft.id));
   };
 
   const getUnrevealedSelected = () => {
-    return getSelectedNFTs().filter(nft => nft.status === 'minted');
+    return getSelectedNFTs().filter((nft) => nft.status === "minted");
   };
 
   // Smart refresh function - reload NFT data without page refresh
@@ -190,7 +197,7 @@ export function YourNFTs() {
     if (!CONTRACTS.GEO_ART || !address || isRefreshing) return;
 
     setIsRefreshing(true);
-    
+
     try {
       const userNFTs = await fetchUserNFTs(address, CONTRACTS.GEO_ART, {
         page: currentPage,
@@ -228,14 +235,14 @@ export function YourNFTs() {
 
   const confirmBatchAction = () => {
     const selectedNFTsList = getSelectedNFTs();
-    
+
     if (pendingBatchAction === "sell") {
       // Start sequential batch sell process
       if (selectedNFTsList.length > 0) {
         setBatchSellQueue(selectedNFTsList);
         setCurrentBatchIndex(0);
         setBatchSellInProgress(true);
-        
+
         // Start with the first NFT
         const firstNFT = selectedNFTsList[0];
         if (firstNFT?.tokenId) {
@@ -251,9 +258,9 @@ export function YourNFTs() {
       // For batch unpack, we can pass multiple token IDs to the open function
       const unrevealedNFTs = getUnrevealedSelected();
       const tokenIds = unrevealedNFTs
-        .filter(nft => nft.tokenId)
-        .map(nft => BigInt(nft.tokenId!));
-      
+        .filter((nft) => nft.tokenId)
+        .map((nft) => BigInt(nft.tokenId!));
+
       if (tokenIds.length > 0 && entropyFee) {
         writeContract({
           address: CONTRACTS.GEO_ART,
@@ -264,7 +271,7 @@ export function YourNFTs() {
         });
       }
     }
-    
+
     setShowBatchConfirm(false);
     setPendingBatchAction(null);
   };
@@ -283,18 +290,18 @@ export function YourNFTs() {
   useEffect(() => {
     if (isSuccess && batchSellInProgress) {
       const currentNFT = batchSellQueue[currentBatchIndex];
-      
+
       if (currentBatchStep === 1) {
         // Step 1 completed: NFT sold for tokens, now convert tokens to ETH
         setCurrentBatchStep(2);
-        
+
         // Small delay, then execute step 2 for current NFT
         setTimeout(() => {
           if (tokenAddress && address && currentNFT) {
             // For simplicity, use a fixed token amount (this should be calculated based on rarity)
             // In a real implementation, you'd want to get the actual rarity-based token amount
             const tokenAmount = BigInt("20000000000000000000000"); // 20,000 tokens (example)
-            
+
             writeContract({
               address: tokenAddress as `0x${string}`,
               abi: boosterTokenV2Abi,
@@ -312,13 +319,13 @@ export function YourNFTs() {
       } else if (currentBatchStep === 2) {
         // Step 2 completed: Tokens converted to ETH, move to next NFT
         const nextIndex = currentBatchIndex + 1;
-        
+
         if (nextIndex < batchSellQueue.length) {
           // More NFTs to sell - reset to step 1 for next NFT
           setCurrentBatchIndex(nextIndex);
           setCurrentBatchStep(1);
           const nextNFT = batchSellQueue[nextIndex];
-          
+
           if (nextNFT?.tokenId) {
             setTimeout(() => {
               writeContract({
@@ -346,7 +353,16 @@ export function YourNFTs() {
       setBatchMode(false);
       refreshNFTData(); // Smart refresh without page reload
     }
-  }, [isSuccess, batchSellInProgress, currentBatchIndex, currentBatchStep, batchSellQueue, tokenAddress, address, clearSelection]);
+  }, [
+    isSuccess,
+    batchSellInProgress,
+    currentBatchIndex,
+    currentBatchStep,
+    batchSellQueue,
+    tokenAddress,
+    address,
+    clearSelection,
+  ]);
 
   if (!isConnected) {
     return (
@@ -390,7 +406,7 @@ export function YourNFTs() {
   return (
     <section className="py-16 bg-white">
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="mb-8 text-center relative">
+        <div className="relative mb-8 text-center">
           <h3 className="mb-4 text-3xl font-semibold font-heading text-slate-900">
             Your NFTs
           </h3>
@@ -401,17 +417,17 @@ export function YourNFTs() {
                 }`
               : "Your collection will appear here"}
           </p>
-          
+
           {/* Manual refresh button - subtle, positioned top-right */}
           {nfts.length > 0 && (
             <button
               onClick={refreshNFTData}
               disabled={isRefreshing}
-              className="absolute top-0 right-0 p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
+              className="absolute top-0 right-0 p-2 transition-colors text-slate-400 hover:text-slate-600 disabled:opacity-50"
               title="Refresh NFT data"
             >
               <svg
-                className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`}
+                className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -430,7 +446,7 @@ export function YourNFTs() {
         {/* Batch Operations Controls */}
         {nfts.length > 0 && (
           <div className="flex flex-col gap-4 mb-6">
-            <div className="flex items-center justify-between">
+            {/* <div className="flex justify-between items-center">
               <Button
                 variant={batchMode ? "default" : "outline"}
                 onClick={() => {
@@ -445,21 +461,27 @@ export function YourNFTs() {
               </Button>
 
               {batchMode && (
-                <div className="flex items-center gap-2 text-sm text-slate-600">
+                <div className="flex gap-2 items-center text-sm text-slate-600">
                   <span>{selectedNFTs.size} selected</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={selectedNFTs.size === nfts.length ? clearSelection : selectAllNFTs}
+                    onClick={
+                      selectedNFTs.size === nfts.length
+                        ? clearSelection
+                        : selectAllNFTs
+                    }
                   >
-                    {selectedNFTs.size === nfts.length ? "Clear All" : "Select All"}
+                    {selectedNFTs.size === nfts.length
+                      ? "Clear All"
+                      : "Select All"}
                   </Button>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Batch Action Buttons */}
-            {batchMode && selectedNFTs.size > 0 && (
+            {/* {batchMode && selectedNFTs.size > 0 && (
               <div className="flex gap-2">
                 <Button
                   onClick={handleBatchSell}
@@ -478,7 +500,7 @@ export function YourNFTs() {
                   </Button>
                 )}
               </div>
-            )}
+            )} */}
           </div>
         )}
 
@@ -487,9 +509,9 @@ export function YourNFTs() {
           <>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {nfts.map((nft) => (
-                <NFTCard 
-                  key={nft.id} 
-                  nft={nft} 
+                <NFTCard
+                  key={nft.id}
+                  nft={nft}
                   showActions={!batchMode} // Hide individual actions in batch mode
                   batchMode={batchMode}
                   isSelected={selectedNFTs.has(nft.id)}
@@ -599,61 +621,71 @@ export function YourNFTs() {
             <h3 className="mb-4 text-lg font-semibold text-gray-900">
               Confirm Batch {pendingBatchAction === "sell" ? "SELL" : "UNPACK"}
             </h3>
-            
+
             <div className="mb-6 space-y-2 text-sm text-gray-600">
               <p>Selected NFTs: {selectedNFTs.size}</p>
               {pendingBatchAction === "unpack" && (
-                <p>Unrevealed NFTs to unpack: {getUnrevealedSelected().length}</p>
+                <p>
+                  Unrevealed NFTs to unpack: {getUnrevealedSelected().length}
+                </p>
               )}
-              
+
               {pendingBatchAction === "sell" && (
                 <>
                   {batchSellInProgress ? (
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                      <div className="flex gap-2 items-center mb-2">
+                        <div className="w-4 h-4 rounded-full border-2 border-blue-600 animate-spin border-t-transparent"></div>
                         <p className="font-medium text-blue-800">
                           Processing batch sell...
                         </p>
                       </div>
-                      <p className="text-blue-600 text-sm">
-                        NFT {currentBatchIndex + 1} of {batchSellQueue.length} - Step {currentBatchStep}/2
+                      <p className="text-sm text-blue-600">
+                        NFT {currentBatchIndex + 1} of {batchSellQueue.length} -
+                        Step {currentBatchStep}/2
                         <br />
                         <span className="text-xs">
-                          {currentBatchStep === 1 ? "Selling NFT for tokens..." : "Converting tokens to ETH..."}
+                          {currentBatchStep === 1
+                            ? "Selling NFT for tokens..."
+                            : "Converting tokens to ETH..."}
                         </span>
                       </p>
-                      <div className="w-full bg-blue-200 rounded-full h-2 mt-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${((currentBatchIndex * 2 + currentBatchStep) / (batchSellQueue.length * 2)) * 100}%` 
+                      <div className="mt-2 w-full h-2 bg-blue-200 rounded-full">
+                        <div
+                          className="h-2 bg-blue-600 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${
+                              ((currentBatchIndex * 2 + currentBatchStep) /
+                                (batchSellQueue.length * 2)) *
+                              100
+                            }%`,
                           }}
                         ></div>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded">
+                    <div className="p-3 bg-red-50 rounded border border-red-200">
                       <p className="font-medium text-red-800">
                         ⚠️ This will sell ALL selected NFTs permanently
                       </p>
-                      <p className="text-red-600 text-xs mt-1">
-                        2-step process per NFT: Sell → Convert to ETH (automatic)
+                      <p className="mt-1 text-xs text-red-600">
+                        2-step process per NFT: Sell → Convert to ETH
+                        (automatic)
                       </p>
                     </div>
                   )}
                 </>
               )}
-              
+
               {pendingBatchAction === "unpack" && (
-                <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                <div className="p-3 bg-orange-50 rounded border border-orange-200">
                   <p className="font-medium text-orange-800">
                     🎲 This will reveal the rarity of all selected packs
                   </p>
                 </div>
               )}
             </div>
-            
+
             <div className="flex gap-3">
               <button
                 onClick={cancelBatchAction}
@@ -666,14 +698,16 @@ export function YourNFTs() {
                 onClick={confirmBatchAction}
                 disabled={isPending || isConfirming || batchSellInProgress}
                 className={`flex-1 px-4 py-2 text-white border disabled:opacity-50 ${
-                  pendingBatchAction === "sell" 
-                    ? "bg-red-600 hover:bg-red-700 border-red-600" 
+                  pendingBatchAction === "sell"
+                    ? "bg-red-600 hover:bg-red-700 border-red-600"
                     : "bg-orange-600 hover:bg-orange-700 border-orange-600"
                 }`}
               >
-                {batchSellInProgress ? "Processing..." : 
-                 isPending || isConfirming ? "Processing..." : 
-                 `Confirm ${pendingBatchAction?.toUpperCase()}`}
+                {batchSellInProgress
+                  ? "Processing..."
+                  : isPending || isConfirming
+                  ? "Processing..."
+                  : `Confirm ${pendingBatchAction?.toUpperCase()}`}
               </button>
             </div>
           </div>
@@ -682,13 +716,13 @@ export function YourNFTs() {
 
       {/* Transaction Status */}
       {error && (
-        <div className="fixed bottom-4 right-4 p-4 max-w-sm text-sm text-red-700 bg-red-100 border border-red-400 rounded">
+        <div className="fixed right-4 bottom-4 p-4 max-w-sm text-sm text-red-700 bg-red-100 rounded border border-red-400">
           Batch transaction failed: {error.message}
         </div>
       )}
-      
+
       {isSuccess && (
-        <div className="fixed bottom-4 right-4 p-4 max-w-sm text-sm text-green-700 bg-green-100 border border-green-400 rounded">
+        <div className="fixed right-4 bottom-4 p-4 max-w-sm text-sm text-green-700 bg-green-100 rounded border border-green-400">
           Batch transaction successful!
           {hash && (
             <a
