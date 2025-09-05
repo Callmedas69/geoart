@@ -147,16 +147,8 @@ export function ContractInfo() {
                     variant={contractInfo.verified ? "default" : "outline"}
                     className="text-sm"
                   >
-                    <span
-                      className={
-                        contractInfo.verified
-                          ? "bg-green-100 text-green-700"
-                          : ""
-                      }
-                    >
-                      {contractInfo.verificationStatus ||
-                        (contractInfo.verified ? "✓ Verified" : "Unverified")}
-                    </span>
+                    {contractInfo.verificationStatus ||
+                      (contractInfo.verified ? "✓ Verified" : "Unverified")}
                   </Badge>
                   {contractInfo.graduationStatus && (
                     <Badge
