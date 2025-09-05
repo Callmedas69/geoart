@@ -147,8 +147,16 @@ export function ContractInfo() {
                     variant={contractInfo.verified ? "default" : "outline"}
                     className="text-sm"
                   >
-                    {contractInfo.verificationStatus ||
-                      (contractInfo.verified ? "✓ Verified" : "Unverified")}
+                    <span
+                      className={
+                        contractInfo.verified
+                          ? "bg-green-100 text-green-700"
+                          : ""
+                      }
+                    >
+                      {contractInfo.verificationStatus ||
+                        (contractInfo.verified ? "✓ Verified" : "Unverified")}
+                    </span>
                   </Badge>
                   {contractInfo.graduationStatus && (
                     <Badge
@@ -177,7 +185,8 @@ export function ContractInfo() {
               {mintPrice && ethPrice > 0 ? (
                 <div className="text-center">
                   <div className="text-2xl font-semibold font-heading text-slate-900">
-                    ${(parseFloat(formatEther(mintPrice)) * ethPrice).toFixed(2)}
+                    $
+                    {(parseFloat(formatEther(mintPrice)) * ethPrice).toFixed(2)}
                   </div>
                   <div className="text-sm font-body text-slate-600">
                     Pack Price
@@ -185,7 +194,7 @@ export function ContractInfo() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <Skeleton className="h-8 w-20 mx-auto mb-2" />
+                  <Skeleton className="mx-auto mb-2 w-20 h-8" />
                   <div className="text-sm font-body text-slate-600">
                     Pack Price
                   </div>
@@ -203,7 +212,7 @@ export function ContractInfo() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <Skeleton className="h-8 w-24 mx-auto mb-2" />
+                  <Skeleton className="mx-auto mb-2 w-24 h-8" />
                   <div className="text-sm font-body text-slate-600">
                     Market Cap
                   </div>
@@ -226,7 +235,7 @@ export function ContractInfo() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                  <Skeleton className="mx-auto mb-2 w-16 h-8" />
                   <div className="text-sm font-body text-slate-600">Status</div>
                 </div>
               )}
