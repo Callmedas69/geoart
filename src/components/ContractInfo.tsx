@@ -145,7 +145,11 @@ export function ContractInfo() {
                   </Badge>
                   <Badge
                     variant={contractInfo.verified ? "default" : "outline"}
-                    className="text-sm"
+                    className={`text-sm ${
+                      contractInfo.verified
+                        ? "bg-green-100 text-green-700 border-green-300"
+                        : ""
+                    }`}
                   >
                     {contractInfo.verificationStatus ||
                       (contractInfo.verified ? "✓ Verified" : "Unverified")}
