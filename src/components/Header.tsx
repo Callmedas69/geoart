@@ -18,11 +18,6 @@ export function Header() {
               </h1>
             </Link>
           </div>
-          <div>
-            {/* <MenuBar /> */}
-            <VibeMarketReferralButton />
-          </div>
-
           {/* Wallet Connect */}
           <div className="flex items-center">
             <CustomConnectButton />

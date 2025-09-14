@@ -22,10 +22,9 @@ export function CustomAccountModal({
 
   if (!isOpen) return null;
 
-  const displayName =
-    basenameQuery.data?.basename ||
-    `${address.substring(0, 6)}…${address.substring(-4)}`;
+  const displayName = basenameQuery.data?.basename || "Account";
   const avatar = basenameQuery.data?.avatar;
+  const truncatedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   const handleCopyAddress = async () => {
     try {
@@ -50,7 +49,7 @@ export function CustomAccountModal({
       />
 
       {/* Modal */}
-      <div className="relative p-6 mx-4 w-80 rounded-lg border duration-200 bg-slate-900 border-slate-800 animate-in zoom-in-95">
+      <div className="relative p-6 mx-4 rounded-lg border duration-200 w-min-80 bg-slate-900 border-slate-800 animate-in zoom-in-95">
         {/* Header with Avatar and Name */}
         <div className="flex flex-col items-center mb-6">
           {avatar ? (
@@ -71,11 +70,11 @@ export function CustomAccountModal({
             {displayName}
           </h2>
 
-          {balance && (
-            <p className="text-sm text-gray-400">
-              {parseFloat(balance.split(" ")[0]).toFixed(6)} ETH
-            </p>
-          )}
+          <p className="mb-2 font-mono text-sm text-gray-400">
+            {truncatedAddress}
+          </p>
+
+          {balance && <p className="text-sm text-gray-400">{balance}</p>}
         </div>
 
         {/* Action Buttons */}
@@ -83,7 +82,7 @@ export function CustomAccountModal({
           <Button
             onClick={handleCopyAddress}
             variant="secondary"
-            className="flex-1 text-white bg-slate-800 hover:bg-slate-700 border-slate-700"
+            className="flex-1 text-sm text-white bg-slate-800 hover:bg-slate-700 border-slate-700"
           >
             Copy Address
           </Button>
@@ -91,7 +90,7 @@ export function CustomAccountModal({
           <Button
             onClick={handleDisconnect}
             variant="destructive"
-            className="flex-1 bg-slate-800 hover:bg-red-600"
+            className="flex-1 text-sm bg-slate-800 hover:bg-red-600"
           >
             Disconnect
           </Button>
@@ -100,7 +99,7 @@ export function CustomAccountModal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          className="absolute top-3 right-3 p-2 text-gray-400 hover:text-white"
         >
           <svg
             className="w-5 h-5"

@@ -241,7 +241,7 @@ export function NFTCard({
             />
           ) : (
             <div className="flex justify-center items-center w-full h-full">
-              <span className="font-body text-slate-700">NFT #{nft.id}</span>
+              <span className="font-body text-slate-700">PACK #{nft.id}</span>
             </div>
           )}
 
@@ -415,7 +415,7 @@ export function NFTCard({
                 </div>
               )}
               <p className="font-medium text-orange-600">
-                This will reveal your NFT's rarity using secure randomness
+                This will reveal your packs's rarity using secure randomness
               </p>
             </div>
 

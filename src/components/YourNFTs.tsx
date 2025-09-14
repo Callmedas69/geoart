@@ -364,38 +364,16 @@ export function YourNFTs() {
     clearSelection,
   ]);
 
-  if (!isConnected) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="mb-8 text-center">
-            <h3 className="mb-4 text-3xl font-semibold font-heading text-slate-900">
-              Your NFTs
-            </h3>
-            <p className="font-body text-slate-700">
-              Connect your wallet to view your NFTs
-            </p>
-            <div className="mt-4">
-              <Button variant="outline" disabled>
-                Connect Wallet to View Your Collection
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   if (isLoading) {
     return (
       <section className="py-16 bg-white">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
             <h3 className="mb-4 text-3xl font-semibold font-heading text-slate-900">
-              Your NFTs
+              Your Geo Art
             </h3>
             <div className="inline-flex items-center px-4 py-2 text-sm font-medium font-body text-slate-700">
-              Loading your NFTs...
+              Loading your Geo...
             </div>
           </div>
         </div>
@@ -408,15 +386,8 @@ export function YourNFTs() {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="relative mb-8 text-center">
           <h3 className="mb-4 text-3xl font-semibold font-heading text-slate-900">
-            Your NFTs
+            Your Geo Art
           </h3>
-          <p className="font-body text-slate-600">
-            {nfts.length > 0
-              ? `You own ${pagination.totalItems} NFT${
-                  pagination.totalItems === 1 ? "" : "s"
-                }`
-              : "Your collection will appear here"}
-          </p>
 
           {/* Manual refresh button - subtle, positioned top-right */}
           {nfts.length > 0 && (
@@ -603,11 +574,9 @@ export function YourNFTs() {
                   />
                 </svg>
               </div>
-              <h4 className="mb-2 text-lg font-semibold font-heading text-slate-900">
-                No NFTs Found
-              </h4>
-              <p className="font-body text-slate-600">
-                You don't own any NFTs from this collection yet.
+
+              <p className="text-xs italic font-body text-slate-600">
+                You don't own any Geo
               </p>
             </div>
           </div>
@@ -623,10 +592,10 @@ export function YourNFTs() {
             </h3>
 
             <div className="mb-6 space-y-2 text-sm text-gray-600">
-              <p>Selected NFTs: {selectedNFTs.size}</p>
+              <p>Selected packs: {selectedNFTs.size}</p>
               {pendingBatchAction === "unpack" && (
                 <p>
-                  Unrevealed NFTs to unpack: {getUnrevealedSelected().length}
+                  Unrevealed packs to unpack: {getUnrevealedSelected().length}
                 </p>
               )}
 
@@ -669,7 +638,7 @@ export function YourNFTs() {
                         ⚠️ This will sell ALL selected NFTs permanently
                       </p>
                       <p className="mt-1 text-xs text-red-600">
-                        2-step process per NFT: Sell → Convert to ETH
+                        2-step process per Pack: Sell → Convert to ETH
                         (automatic)
                       </p>
                     </div>

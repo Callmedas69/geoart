@@ -131,7 +131,7 @@ export function NFTGrid() {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <h3 className="mb-4 text-3xl font-semibold font-heading text-slate-900">
-            {viewMode === "collection" ? "GEO ART Collection" : "Your NFTs"}
+            {viewMode === "collection" ? "GEO ART Collection" : "Your Packs"}
           </h3>
 
           {/* View Toggle */}
@@ -154,7 +154,7 @@ export function NFTGrid() {
 
           {!isConnected && viewMode === "owned" && (
             <p className="mt-2 text-sm font-body text-slate-700">
-              Connect your wallet to view your NFTs
+              Connect your wallet to view your Packs
             </p>
           )}
         </div>
@@ -233,8 +233,8 @@ export function NFTGrid() {
           <div className="text-center">
             <p className="font-body text-slate-700">
               {viewMode === "collection"
-                ? "No NFTs found in collection"
-                : "No NFTs found in your wallet"}
+                ? "No Packs found in collection"
+                : "No Packs found in your wallet"}
             </p>
           </div>
         )}

@@ -57,23 +57,23 @@ export function Hero() {
     <section className="relative">
       <div
         ref={containerRef}
-        className="w-full h-screen p-0 m-0 flex justify-center items-center"
+        className="w-full min-h-screen px-4 sm:px-0 py-8 sm:py-0 m-0 flex justify-center items-center"
       >
-        <div className="flex gap-4 md:gap-8">
+        <div className="flex gap-2 sm:gap-4 md:gap-8">
           <div
             ref={(el) => {
               if (el) framesRef.current[0] = el;
             }}
             className="isolate relative"
           >
-            <Image 
-              src={frameLeft} 
-              alt="frame-left" 
-              width={250} 
-              height={250} 
-              className="w-32 h-32 sm:w-48 sm:h-48 md:w-60 md:h-60 lg:w-[250px] lg:h-[250px]"
+            <Image
+              src={frameLeft}
+              alt="frame-left"
+              width={250}
+              height={250}
+              className="w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-60 lg:h-60 xl:w-[250px] xl:h-[250px]"
             />
-            <h1 className="flex absolute inset-0 justify-center items-center p-0 m-0 text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-extrabold leading-none translate-y-3 tracking-wider">
+            <h1 className="flex absolute inset-0 justify-center items-center p-0 m-0 text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-9xl font-extrabold leading-none translate-y-2 sm:translate-y-3 tracking-wider">
               G
             </h1>
           </div>
@@ -83,14 +83,14 @@ export function Hero() {
             }}
             className="isolate relative"
           >
-            <Image 
-              src={frameMid} 
-              alt="frame-mid" 
-              width={250} 
-              height={250} 
-              className="w-32 h-32 sm:w-48 sm:h-48 md:w-60 md:h-60 lg:w-[250px] lg:h-[250px]"
+            <Image
+              src={frameMid}
+              alt="frame-mid"
+              width={250}
+              height={250}
+              className="w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-60 lg:h-60 xl:w-[250px] xl:h-[250px]"
             />
-            <h1 className="flex absolute inset-0 justify-center items-center p-0 m-0 text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-extrabold leading-none translate-y-3 tracking-wider">
+            <h1 className="flex absolute inset-0 justify-center items-center p-0 m-0 text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-9xl font-extrabold leading-none translate-y-2 sm:translate-y-3 tracking-wider">
               E
             </h1>
           </div>
@@ -105,9 +105,9 @@ export function Hero() {
               alt="frame-right"
               width={250}
               height={250}
-              className="w-32 h-32 sm:w-48 sm:h-48 md:w-60 md:h-60 lg:w-[250px] lg:h-[250px]"
+              className="w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-60 lg:h-60 xl:w-[250px] xl:h-[250px]"
             />
-            <h1 className="flex absolute inset-0 justify-center items-center p-0 m-0 text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-extrabold leading-none translate-y-3 tracking-wider">
+            <h1 className="flex absolute inset-0 justify-center items-center p-0 m-0 text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-9xl font-extrabold leading-none translate-y-2 sm:translate-y-3 tracking-wider">
               O
             </h1>
           </div>

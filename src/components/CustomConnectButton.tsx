@@ -132,7 +132,7 @@ export function CustomConnectButton() {
                     return (
                       <Button
                         onClick={openConnectModal}
-                        className="text-white cursor-pointer bg-slate-900 hover:bg-slate-800"
+                        className="text-white cursor-pointer bg-slate-900 hover:bg-slate-800 text-sm sm:text-base min-h-[44px]"
                       >
                         Connect Wallet
                       </Button>
@@ -144,7 +144,7 @@ export function CustomConnectButton() {
                       <Button
                         onClick={openChainModal}
                         variant="destructive"
-                        className="bg-red-600 hover:bg-red-700"
+                        className="bg-red-600 hover:bg-red-700 text-sm sm:text-base min-h-[44px]"
                       >
                         Wrong network
                       </Button>
@@ -152,18 +152,18 @@ export function CustomConnectButton() {
                   }
 
                   return (
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                       <Button
                         onClick={openChainModal}
                         variant="secondary"
-                        className="flex gap-2 items-center text-white cursor-pointer bg-slate-900 hover:bg-slate-800"
+                        className="hidden sm:flex gap-2 items-center text-white cursor-pointer bg-slate-900 hover:bg-slate-800 text-sm sm:text-base min-h-[44px] w-auto"
                       >
                         {chain.hasIcon && (
                           <div
                             style={{
                               background: chain.iconBackground,
-                              width: 16,
-                              height: 16,
+                              width: 18,
+                              height: 18,
                               borderRadius: "50%",
                               overflow: "hidden",
                             }}
@@ -172,31 +172,34 @@ export function CustomConnectButton() {
                               <img
                                 alt={chain.name ?? "Chain icon"}
                                 src={chain.iconUrl}
-                                style={{ width: 16, height: 16 }}
+                                style={{ width: 18, height: 18 }}
                               />
                             )}
                           </div>
                         )}
-                        {chain.name}
+                        <span className="truncate">{chain.name}</span>
                       </Button>
 
                       <Button
                         onClick={() => setIsAccountModalOpen(true)}
                         variant="secondary"
-                        className="flex gap-2 items-center text-white cursor-pointer bg-slate-900 hover:bg-slate-800"
+                        className="flex gap-2 items-center text-white cursor-pointer bg-slate-900 hover:bg-slate-800 text-sm sm:text-base min-h-[44px] w-full sm:w-auto"
                       >
                         {avatar && (
                           <img
                             src={avatar}
                             alt="Avatar"
-                            className="w-4 h-4 rounded-full"
-                            style={{ width: 16, height: 16 }}
+                            className="w-4 h-4 sm:w-5 sm:h-5 rounded-full flex-shrink-0"
                           />
                         )}
-                        {displayName}
-                        {account.displayBalance
-                          ? ` (${account.displayBalance})`
-                          : ""}
+                        <span className="truncate max-w-[120px] sm:max-w-none">
+                          {displayName}
+                        </span>
+                        {account.displayBalance && (
+                          <span className="text-xs sm:text-sm opacity-75 hidden xs:inline">
+                            ({account.displayBalance})
+                          </span>
+                        )}
                       </Button>
                     </div>
                   );

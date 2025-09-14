@@ -29,6 +29,7 @@ interface ContractInfo {
   marketCap?: string;
   isGraduated?: boolean;
   isActive?: boolean;
+  isVerifiedArtist?: boolean;
   // Status text from contract
   verificationStatus?: string;
   graduationStatus?: string;
@@ -132,20 +133,20 @@ export function ContractInfo() {
                 <img
                   src={contractInfo.image}
                   alt={contractInfo.name}
-                  className="object-cover w-16 h-16 border-2 border-border"
+                  className="object-cover w-16 h-full border-1 border-border"
                 />
               )}
               <div>
-                <CardTitle className="text-3xl font-heading text-slate-900">
+                <CardTitle className="text-3xl md:text-4xl font-heading text-slate-900">
                   {contractInfo.name}
                 </CardTitle>
-                <div className="flex gap-2 justify-center items-center mt-2">
-                  <Badge variant="secondary" className="font-mono text-sm">
+                <div className="flex gap-2 justify-center items-center mt-2 text-xs md:text-sm">
+                  <Badge variant="secondary" className="font-mono">
                     ${contractInfo.symbol}
                   </Badge>
                   <Badge
                     variant={contractInfo.verified ? "default" : "outline"}
-                    className={`text-sm ${
+                    className={`${
                       contractInfo.verified
                         ? "bg-green-100 text-green-700 border-green-300"
                         : ""
@@ -159,7 +160,6 @@ export function ContractInfo() {
                       variant={
                         contractInfo.isGraduated ? "default" : "secondary"
                       }
-                      className="text-sm"
                     >
                       {contractInfo.graduationStatus}
                     </Badge>
@@ -169,7 +169,7 @@ export function ContractInfo() {
             </div>
 
             {contractInfo.description && (
-              <p className="mx-auto max-w-3xl italic leading-relaxed text-slate-600 font-body">
+              <p className="mx-auto max-w-3xl text-sm italic leading-relaxed md:text-lg text-slate-600 font-body">
                 {contractInfo.description}
               </p>
             )}
@@ -239,7 +239,7 @@ export function ContractInfo() {
 
             {/* Contract Addresses */}
             <div className="pt-6 border-t border-border">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                 <div className="text-center">
                   <div className="mb-2 text-sm font-body text-slate-600">
                     NFT Contract
@@ -275,8 +275,11 @@ export function ContractInfo() {
                     <div className="mb-2 text-sm font-body text-slate-600">
                       Creator
                     </div>
-                    <div className="inline-block px-3 py-2 font-mono text-sm !text-slate-900 bg-slate-100">
+                    <div className="inline-flex items-center gap-2 px-3 py-2 font-mono text-sm !text-slate-900 bg-slate-100">
                       {addressDisplay?.creator}
+                      <span className="text-green-600" title="Verified Artist">
+                        ✓
+                      </span>
                     </div>
                   </div>
                 )}

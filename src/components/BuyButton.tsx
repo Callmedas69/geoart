@@ -148,8 +148,8 @@ export function BuyButton() {
         Quantity
       </label>
 
-      {/* Single row: Input field + Preset buttons */}
-      <div className="flex flex-wrap gap-3 justify-center items-center mb-3">
+      {/* Input field and preset buttons */}
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-center mb-3">
         {/* Input field */}
         <input
           aria-label="Quantity"
@@ -157,7 +157,7 @@ export function BuyButton() {
           value={quantityInput}
           onChange={(e) => handleQuantityChange(e.target.value)}
           placeholder="Qty"
-          className={`px-3 py-2 w-20 text-center font-medium rounded border-2 ${
+          className={`px-3 py-2 w-24 sm:w-20 text-center font-medium rounded border-2 text-sm sm:text-base min-h-[44px] ${
             isValidQuantity(quantityInput)
               ? "border-gray-300 focus:border-blue-500"
               : "border-red-300 focus:border-red-500"
@@ -165,19 +165,21 @@ export function BuyButton() {
         />
 
         {/* Preset buttons */}
-        {[1, 5, 10, 100].map((preset) => (
-          <button
-            key={preset}
-            onClick={() => handlePresetClick(preset)}
-            className={`px-3 py-2 font-medium rounded transition-colors ${
-              quantity === preset
-                ? "bg-slate-700 text-white"
-                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-            }`}
-          >
-            {preset}
-          </button>
-        ))}
+        <div className="flex flex-wrap gap-2 justify-center">
+          {[1, 5, 10, 100].map((preset) => (
+            <button
+              key={preset}
+              onClick={() => handlePresetClick(preset)}
+              className={`px-4 py-2 font-medium rounded transition-colors text-sm sm:text-base min-h-[44px] min-w-[48px] ${
+                quantity === preset
+                  ? "bg-slate-700 text-white"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+              }`}
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -206,7 +208,7 @@ export function BuyButton() {
                 <Button
                   onClick={showConfirmation}
                   size="lg"
-                  className="min-w-[140px]"
+                  className="min-w-[140px] text-sm sm:text-base min-h-[48px] w-full sm:w-auto max-w-xs"
                   disabled={
                     (isPending && activeAction === "buy") ||
                     !mintPrice ||
@@ -224,56 +226,57 @@ export function BuyButton() {
               {/* Information Container */}
               <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 border md:grid-cols-2">
                 {/* Left: Total Fund on Wallet */}
-                <div className="text-left">
+                <div className="text-center md:text-left">
                   <h4 className="mb-1 text-sm font-semibold text-gray-600">
                     Wallet Balance
                   </h4>
                   {balanceData ? (
-                    <p className="text-lg font-bold text-slate-900">
-                      {actualBalance.toFixed(5)} ETH
+                    <p className="text-base sm:text-lg font-bold text-slate-900">
+                      {actualBalance.toFixed(4)} ETH
                       {ethPrice > 0 && (
-                        <span className="text-sm text-gray-600">
-                          {" "}/ ${(actualBalance * ethPrice).toFixed(2)} USD
+                        <span className="block sm:inline text-xs sm:text-sm text-gray-600">
+                          <span className="hidden sm:inline">{" "}/ </span>
+                          ${(actualBalance * ethPrice).toFixed(2)} USD
                         </span>
                       )}
                     </p>
                   ) : (
-                    <Skeleton className="h-7 w-32" />
+                    <Skeleton className="h-6 sm:h-7 w-32 mx-auto md:mx-0" />
                   )}
                   {/* Validation messages */}
                   {!isValidQuantity(quantityInput) && quantityInput !== "" && (
-                    <p className="mt-2 text-[10px] text-red-600">
+                    <p className="mt-2 text-xs text-red-600">
                       Please enter a number between 1-10,000
                     </p>
                   )}
 
                   {balanceError && (
-                    <p className="mt-2 text-[10px] text-red-600 italic">
+                    <p className="mt-2 text-xs text-red-600 italic">
                       Insufficient balance
                     </p>
                   )}
                 </div>
 
                 {/* Right: Total Pack Price */}
-                <div className="text-right">
+                <div className="text-center md:text-right">
                   <h4 className="mb-1 text-sm font-semibold text-gray-600">
                     {`${currentAmount} Pack${currentAmount > 1 ? "s" : ""}`}
                   </h4>
                   {mintPrice ? (
                     <div>
-                      <p className="text-lg font-bold text-slate-900">
-                        {parseFloat(formatEther(mintPrice)).toFixed(5)} ETH
+                      <p className="text-base sm:text-lg font-bold text-slate-900">
+                        {parseFloat(formatEther(mintPrice)).toFixed(4)} ETH
                       </p>
                       {ethPrice > 0 && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600">
                           ${(parseFloat(formatEther(mintPrice)) * ethPrice).toFixed(2)} USD
                         </p>
                       )}
                     </div>
                   ) : (
                     <div>
-                      <Skeleton className="h-7 w-24 mb-1" />
-                      <Skeleton className="h-5 w-20" />
+                      <Skeleton className="h-6 sm:h-7 w-24 mb-1 mx-auto md:mx-0 md:ml-auto" />
+                      <Skeleton className="h-4 sm:h-5 w-20 mx-auto md:mx-0 md:ml-auto" />
                     </div>
                   )}
                 </div>
@@ -307,33 +310,33 @@ export function BuyButton() {
           {/* Confirmation Dialog */}
           {showConfirmDialog && (
             <div className="flex fixed inset-0 z-50 justify-center items-center duration-200 bg-black/50 animate-in fade-in">
-              <div className="p-6 mx-4 max-w-sm bg-white border border-gray-200 duration-200 animate-in zoom-in-95">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              <div className="p-6 mx-4 w-full max-w-sm bg-white border border-gray-200 duration-200 animate-in zoom-in-95">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900 text-center">
                   Confirm BUY
                 </h3>
 
-                <div className="mb-6 space-y-2 text-sm text-gray-600">
+                <div className="mb-6 space-y-2 text-sm text-gray-600 text-center">
                   <p>
                     Quantity: {currentAmount} pack
                     {currentAmount > 1 ? "s" : ""}
                   </p>
                   {mintPrice && (
                     <p>
-                      Cost: {parseFloat(formatEther(mintPrice)).toFixed(5)} ETH
+                      Cost: {parseFloat(formatEther(mintPrice)).toFixed(4)} ETH
                     </p>
                   )}
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleCancel}
-                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200"
+                    className="flex-1 px-4 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 min-h-[44px]"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleConfirm}
-                    className="flex-1 px-4 py-2 text-white border bg-slate-800 hover:bg-slate-900 border-slate-800"
+                    className="flex-1 px-4 py-3 text-sm font-medium text-white border bg-slate-800 hover:bg-slate-900 border-slate-800 min-h-[44px]"
                   >
                     Confirm
                   </button>
