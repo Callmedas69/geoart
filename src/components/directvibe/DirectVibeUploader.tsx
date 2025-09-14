@@ -10,6 +10,7 @@ import { useVibeAuth } from "@/hooks/useVibeAuth";
 import { VibeFileUploadNew } from "./VibeFileUploadNew";
 import { VibeCollectionForm } from "./VibeCollectionForm";
 import { VibeDeploymentFlow } from "./VibeDeploymentFlow";
+import { SpecificationModal } from "./SpecificationModal";
 
 interface UploadedFile {
   file: File;
@@ -46,6 +47,7 @@ export const DirectVibeUploader: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSpecModal, setShowSpecModal] = useState(false);
 
   // KISS: Simple step definition
   const steps = [
@@ -176,12 +178,12 @@ export const DirectVibeUploader: React.FC = () => {
         </div>
 
         {/* Current Step Label - Accessible & Responsive */}
-        <div className="px-4 mt-4 text-center">
+        <div className="px-4 mt-8 text-center">
           <p
             className="text-base font-bold text-black sm:text-lg"
             id="current-step-label"
           >
-            STEP {currentStep + 1}: {steps[currentStep].label.toUpperCase()}
+            STEP {currentStep + 1} : {steps[currentStep].label.toUpperCase()}
           </p>
         </div>
       </div>
@@ -231,15 +233,10 @@ export const DirectVibeUploader: React.FC = () => {
         {currentStep === 0 && (
           <Card>
             <CardHeader className="border-black border-b-1">
-              <CardTitle className="text-xl">CONNECT WALLET</CardTitle>
+              <CardTitle className="mb-2 text-xl">CONNECT WALLET</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p className="font-medium text-black">
-                  Connect your wallet and authenticate to start uploading your
-                  collection.
-                </p>
-
+              <div className="space-y-8">
                 {/* Wallet Status */}
                 <Card className="p-3">
                   <div className="flex gap-2 items-center">
@@ -254,7 +251,10 @@ export const DirectVibeUploader: React.FC = () => {
                     ) : (
                       <>
                         <div className="w-4 h-4 border-black border-1" />
-                        <span>Connect wallet using the header button</span>
+                        <span>
+                          Connect your wallet and authenticate to start
+                          uploading your collection.
+                        </span>
                       </>
                     )}
                   </div>
@@ -285,7 +285,15 @@ export const DirectVibeUploader: React.FC = () => {
         {currentStep === 1 && (
           <Card>
             <CardHeader className="border-black border-b-1">
-              <CardTitle className="mb-2 text-xl">UPLOAD FILES</CardTitle>
+              <CardTitle className="flex justify-between items-center mb-2 text-xl">
+                <p>UPLOAD FILES</p>
+                <button
+                  onClick={() => setShowSpecModal(true)}
+                  className="text-sm font-normal text-black hover:text-gray-600 underline transition-colors"
+                >
+                  How it works
+                </button>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <VibeFileUploadNew
@@ -337,6 +345,12 @@ export const DirectVibeUploader: React.FC = () => {
           </Card>
         )}
       </div>
+
+      {/* Specification Modal */}
+      <SpecificationModal
+        isOpen={showSpecModal}
+        onClose={() => setShowSpecModal(false)}
+      />
     </div>
   );
 };

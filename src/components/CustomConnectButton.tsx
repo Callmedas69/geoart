@@ -132,7 +132,7 @@ export function CustomConnectButton() {
                     return (
                       <Button
                         onClick={openConnectModal}
-                        className="text-white cursor-pointer bg-slate-900 hover:bg-slate-800 text-sm sm:text-base min-h-[44px]"
+                        className="!text-white cursor-pointer bg-slate-900 hover:bg-slate-800 text-sm sm:text-base min-h-[44px]"
                       >
                         Connect Wallet
                       </Button>
@@ -152,7 +152,7 @@ export function CustomConnectButton() {
                   }
 
                   return (
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                       <Button
                         onClick={openChainModal}
                         variant="secondary"
@@ -189,14 +189,14 @@ export function CustomConnectButton() {
                           <img
                             src={avatar}
                             alt="Avatar"
-                            className="w-4 h-4 sm:w-5 sm:h-5 rounded-full flex-shrink-0"
+                            className="flex-shrink-0 w-4 h-4 rounded-full sm:w-5 sm:h-5"
                           />
                         )}
                         <span className="truncate max-w-[120px] sm:max-w-none">
                           {displayName}
                         </span>
                         {account.displayBalance && (
-                          <span className="text-xs sm:text-sm opacity-75 hidden xs:inline">
+                          <span className="hidden text-xs opacity-75 sm:text-sm xs:inline">
                             ({account.displayBalance})
                           </span>
                         )}

@@ -6,15 +6,14 @@ import { DirectVibeUploader } from "@/components/directvibe/DirectVibeUploader";
 export default function DirectVibePage() {
   return (
     <div className="min-h-screen bg-white">
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <section className="text-center mb-8 lg:mb-12">
-          <p className="mx-auto max-w-2xl text-sm sm:text-base font-medium text-black">
-            Upload your NFT collection directly to Vibe.Market platform using
-            their native upload system. Simple, fast, and guaranteed
-            compatibility.
+      <main className="container px-4 py-12 mx-auto sm:px-6 lg:px-8">
+        <section className="mb-8 text-center lg:mb-12">
+          <p className="mx-auto max-w-2xl text-sm font-medium text-black md:text-xl sm:text-base">
+            GeoPack Manager is a simple uploader tool on VibeMarket that lets
+            you easily pack your Pack
           </p>
         </section>
-        <section className="max-w-2xl mx-auto">
+        <section className="mx-auto max-w-2xl">
           <DirectVibeUploader />
         </section>
       </main>
