@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { League_Spartan, Sanchez } from "next/font/google";
 import { Web3Provider } from "@/providers/web3-provider";
+import { Header } from "@/components/Header";
 import "./globals.css";
 
 const leagueSpartan = League_Spartan({
@@ -30,7 +31,10 @@ export default function RootLayout({
       <body
         className={`${leagueSpartan.variable} ${sanchez.variable} antialiased`}
       >
-        <Web3Provider>{children}</Web3Provider>
+        <Web3Provider>
+          <Header />
+          {children}
+        </Web3Provider>
       </body>
     </html>
   );

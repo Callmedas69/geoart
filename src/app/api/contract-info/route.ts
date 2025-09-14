@@ -5,11 +5,15 @@ const VIBEMARKET_BASE_URL = 'https://build.wield.xyz/vibe/boosterbox'
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const contractAddress = searchParams.get('contractAddress')
+  const slug = searchParams.get('slug')
   const chainId = searchParams.get('chainId') || '8453'
 
-  if (!contractAddress) {
+  // Accept either contractAddress or slug
+  const contractAddressOrSlug = contractAddress || slug
+
+  if (!contractAddressOrSlug) {
     return NextResponse.json(
-      { error: 'Contract address is required' },
+      { error: 'Either contract address or slug is required' },
       { status: 400 }
     )
   }
@@ -31,7 +35,7 @@ export async function GET(request: NextRequest) {
     })
 
     const response = await fetch(
-      `${VIBEMARKET_BASE_URL}/contractAddress/${contractAddress}?${queryParams}`,
+      `${VIBEMARKET_BASE_URL}/contractAddress/${contractAddressOrSlug}?${queryParams}`,
       {
         headers,
         cache: 'force-cache',

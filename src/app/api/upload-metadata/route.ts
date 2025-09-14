@@ -3,6 +3,7 @@ import { FilebaseService, generateVibeMetadata, MetadataJson } from '@/services/
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🚀 API: Starting metadata upload request')
     const formData = await request.formData()
     
     // Extract files and configuration
@@ -18,12 +19,25 @@ export async function POST(request: NextRequest) {
     const csvData = JSON.parse(csvDataStr)
     const config = JSON.parse(configStr)
     
+    // Extract collection name from config
+    const collectionName = config.nftName?.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() || 'collection'
+    
     // Extract image files
     let index = 0
     while (formData.get(`image-${index}`)) {
-      images.push(formData.get(`image-${index}`) as File)
+      const file = formData.get(`image-${index}`) as File
+      console.log(`📂 API: Found image-${index}:`, {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      })
+      images.push(file)
       index++
     }
+
+    console.log(`📊 API: Extracted ${images.length} images and ${csvData.length} CSV entries`)
+    console.log(`🏷️ API: Collection name will be: ${collectionName}`)
 
     if (images.length === 0 || csvData.length === 0) {
       return NextResponse.json({ error: 'No images or CSV data provided' }, { status: 400 })
@@ -56,16 +70,23 @@ export async function POST(request: NextRequest) {
 
     // Create Filebase service
     const filebaseService = new FilebaseService(filebaseConfig)
+    console.log('🔧 API: FilebaseService created')
     
     // First upload to get the IPFS hash structure
-    const tempMetadata = generateVibeMetadata(images, csvData, config)
-    const tempResult = await filebaseService.uploadToFilebase(images, tempMetadata)
+    console.log('📦 API: Generating temporary metadata')
+    const tempMetadata = generateVibeMetadata(images, csvData, config, undefined, collectionName)
+    console.log('☁️ API: Starting first upload to get IPFS structure')
+    const tempResult = await filebaseService.uploadToFilebase(images, tempMetadata, collectionName)
     
     // Generate final metadata with correct image URLs
-    const finalMetadata = generateVibeMetadata(images, csvData, config, tempResult.imageBaseUrl)
+    console.log('🔄 API: Generating final metadata with correct URLs')
+    console.log('🖼️ API: Image base URL:', tempResult.imageBaseUrl)
+    const finalMetadata = generateVibeMetadata(images, csvData, config, tempResult.imageBaseUrl, collectionName)
     
     // Upload final metadata with correct URLs
-    const result = await filebaseService.uploadToFilebase(images, finalMetadata)
+    console.log('☁️ API: Starting final upload with correct URLs')
+    const result = await filebaseService.uploadToFilebase(images, finalMetadata, collectionName)
+    console.log('✅ API: Upload process completed successfully')
     
     return NextResponse.json({
       success: true,

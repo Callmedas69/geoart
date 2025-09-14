@@ -1,6 +1,8 @@
 "use client";
 
-import React from 'react';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -23,14 +25,34 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // SECURITY: No console logging in production
+    // In production, send to proper logging service instead
   }
 
   render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="p-4 text-center text-gray-600">
-          <p>Something went wrong. Please refresh the page.</p>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="max-w-md mx-auto text-center p-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl mb-4">
+                  Something went wrong
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-6">
+                  An unexpected error occurred. Please refresh the page and try again.
+                </p>
+                <Button 
+                  onClick={() => window.location.reload()}
+                  className="w-full"
+                >
+                  Reload Page
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       );
     }

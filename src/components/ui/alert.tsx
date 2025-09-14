@@ -6,18 +6,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
-  "relative w-full border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+  // GEO THEME: Sharp borders, flat design, high contrast
+  "relative w-full border-2 border-black p-4 bg-white text-black shadow-none [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-black",
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
-        destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
-        success:
-          "border-green-500/50 text-green-700 bg-green-50 dark:border-green-500 dark:text-green-400 dark:bg-green-950 [&>svg]:text-green-600",
-        warning:
-          "border-yellow-500/50 text-yellow-700 bg-yellow-50 dark:border-yellow-500 dark:text-yellow-400 dark:bg-yellow-950 [&>svg]:text-yellow-600",
-        info: "border-blue-500/50 text-blue-700 bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:bg-blue-950 [&>svg]:text-blue-600",
+        // GEO THEME: All variants use black/white geometric styling
+        default: "bg-white text-black border-black",
+        destructive: "bg-white text-black border-black [&>svg]:text-black",
+        success: "bg-white text-black border-black [&>svg]:text-black",
+        warning: "bg-white text-black border-black [&>svg]:text-black",
+        info: "bg-white text-black border-black [&>svg]:text-black",
       },
     },
     defaultVariants: {
@@ -45,7 +44,11 @@ const AlertTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h5
     ref={ref}
-    className={cn("mb-1 font-medium tracking-tight leading-none", className)}
+    className={cn(
+      // GEO THEME: Bold, uppercase typography
+      "mb-1 font-bold uppercase tracking-wide leading-none text-black",
+      className
+    )}
     {...props}
   />
 ));

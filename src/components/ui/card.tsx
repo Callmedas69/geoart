@@ -7,7 +7,8 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm",
+        // GEO THEME: Sharp borders, flat design, high contrast
+        "flex flex-col gap-6 py-6 text-black bg-white border-black shadow-none border-1",
         className
       )}
       {...props}
@@ -32,7 +33,11 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-title"
-      className={cn("leading-none font-semibold", className)}
+      className={cn(
+        // GEO THEME: Bold, uppercase, high-contrast typography
+        "font-bold tracking-wide leading-none text-black uppercase",
+        className
+      )}
       {...props}
     />
   );
@@ -42,7 +47,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   );
@@ -53,7 +58,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-action"
       className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        "col-start-2 row-span-2 row-start-1 justify-self-end self-start",
         className
       )}
       {...props}

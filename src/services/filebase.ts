@@ -49,10 +49,15 @@ class FilebaseService {
 
   async uploadToFilebase(
     images: File[],
-    metadata: MetadataJson[]
+    metadata: MetadataJson[],
+    collectionName: string
   ): Promise<UploadResult> {
     if (!images.length || !metadata.length) {
       throw new Error('Images and metadata are required')
+    }
+    
+    if (!collectionName?.trim()) {
+      throw new Error('Collection name is required')
     }
     
     if (images.length !== metadata.length) {
@@ -60,14 +65,26 @@ class FilebaseService {
     }
 
     try {
+      console.log('🔍 FilebaseService: Starting upload process')
+      console.log(`📊 Upload Summary: ${images.length} images, ${metadata.length} metadata files`)
+      console.log(`📁 Collection: ${collectionName}`)
+      
       // Upload images first
       const imageUploads = images.map(async (image, index) => {
+        console.log(`🖼️ Processing Image ${index + 1}:`, {
+          name: image.name,
+          size: image.size,
+          type: image.type,
+          lastModified: image.lastModified
+        })
+        
         if (image.size > 10 * 1024 * 1024) { // 10MB limit
           throw new Error(`Image ${index + 1} is too large (max 10MB)`)
         }
         
         const fileExtension = image.type.split('/')[1] || 'png'
-        const key = `images/${index + 1}.${fileExtension}`
+        const key = `${collectionName}/images/${index + 1}.${fileExtension}`
+        console.log(`📤 Uploading to key: ${key}`)
         const upload = new Upload({
           client: this.s3Client,
           params: {
@@ -77,12 +94,25 @@ class FilebaseService {
             ContentType: image.type,
           },
         })
-        return await upload.done()
+        const result = await upload.done()
+        console.log(`✅ Image ${index + 1} uploaded:`, {
+          key,
+          location: (result as any)?.Location,
+          etag: (result as any)?.ETag
+        })
+        return result
       })
 
       // Upload metadata
       const metadataUploads = metadata.map(async (meta, index) => {
-        const key = `metadata/${index + 1}.json`
+        const key = `${collectionName}/metadata/${index + 1}.json`
+        console.log(`📝 Uploading metadata ${index + 1} to key: ${key}`)
+        console.log(`📄 Metadata content preview:`, {
+          name: meta.name,
+          image: meta.image,
+          attributes: meta.attributes.length
+        })
+        
         const upload = new Upload({
           client: this.s3Client,
           params: {
@@ -92,7 +122,13 @@ class FilebaseService {
             ContentType: 'application/json',
           },
         })
-        return await upload.done()
+        const result = await upload.done()
+        console.log(`✅ Metadata ${index + 1} uploaded:`, {
+          key,
+          location: (result as any)?.Location,
+          etag: (result as any)?.ETag
+        })
+        return result
       })
 
       const [imageResults, metadataResults] = await Promise.all([
@@ -122,10 +158,10 @@ class FilebaseService {
       })
 
       // For Filebase, use the direct IPFS gateway with bucket structure
-      // Format: https://ipfs.filebase.io/ipfs/BUCKET_NAME/path
+      // Format: https://ipfs.filebase.io/ipfs/BUCKET_NAME/COLLECTION_NAME/path
       // Based on Filebase documentation and your guidance
-      const baseURI = `https://ipfs.filebase.io/ipfs/${bucketName}/metadata/`
-      const imageBaseUrl = `https://ipfs.filebase.io/ipfs/${bucketName}/images/`
+      const baseURI = `https://ipfs.filebase.io/ipfs/${bucketName}/${collectionName}/metadata/`
+      const imageBaseUrl = `https://ipfs.filebase.io/ipfs/${bucketName}/${collectionName}/images/`
 
       return {
         baseURI,
@@ -169,7 +205,8 @@ export function generateVibeMetadata(
     useFoil: boolean
     useWear: boolean
   },
-  imageBaseUrl?: string
+  imageBaseUrl?: string,
+  collectionName?: string
 ): MetadataJson[] {
   if (!images.length || !csvData.length) {
     throw new Error('Images and CSV data are required')
@@ -244,7 +281,9 @@ export function generateVibeMetadata(
     const fileExtension = images[index]?.type.split('/')[1] || 'png'
     const imageUrl = imageBaseUrl 
       ? `${imageBaseUrl}${tokenId}.${fileExtension}`
-      : `https://ipfs.filebase.io/ipfs/vibeloader/images/${tokenId}.${fileExtension}`
+      : collectionName 
+        ? `https://ipfs.filebase.io/ipfs/vibeloader/${collectionName}/images/${tokenId}.${fileExtension}`
+        : `https://ipfs.filebase.io/ipfs/vibeloader/images/${tokenId}.${fileExtension}`
 
     return {
       name: `${config.nftName} #${tokenId}`,
