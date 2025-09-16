@@ -1,7 +1,12 @@
 // Share Route with OpenGraph Meta Tags - Phase 1.1
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import { cache } from "react";
 import { getCollectionBySlug } from "@/services/collections";
+
+const getCachedCollection = cache(getCollectionBySlug);
+const REFERRAL_CODE =
+  process.env.NEXT_PUBLIC_VIBEMARKET_REFERRAL || "C8475MDMBEAM";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -9,45 +14,33 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await getCollectionBySlug(slug);
+  const collection = await getCachedCollection(slug);
 
   if (!collection) {
-    return { title: "Collection Not Found" };
+    notFound();
   }
 
-  const ogImageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/og/${slug}`;
-  const referralCode =
-    process.env.NEXT_PUBLIC_VIBEMARKET_REFERRAL || "C8475MDMBEAM";
-  const shareUrl = `https://vibechain.com/market/${slug}?ref=${referralCode}`;
+  const shareUrl = `https://vibechain.com/market/${slug}?ref=${REFERRAL_CODE}`;
 
   return {
     title: `${collection.name}`,
     description: collection.description
-      ? `${collection.description} - deployed by GeoPack Manager`
-      : `Pack your collection made simple with GeoPack Manager`,
+      ? `${collection.description} - packed by GeoPack Manager`
+      : `Just launch on @vibedotmarket packed by GeopAck Manager`,
     openGraph: {
       title: `${collection.name} 🎨`,
       description: collection.description
-        ? `${collection.description} - deployed by GeoPack Manager`
-        : `✅ Deployed by GeoPack Manager - Launch your pack at @vibedotmarket`,
+        ? `${collection.description} - packed by GeoPack Manager`
+        : `Just launch on @vibedotmarket packed by GeopAck Manager`,
       url: shareUrl,
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: `${collection.name} deployed by GeoPack Manager`,
-        },
-      ],
       type: "website",
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary",
       title: `${collection.name}`,
       description: collection.description
-        ? `${collection.description} - deployed by GeoPack Manager`
-        : `Launch your pack @vibedotmarket with GeoPack Manager`,
-      images: [ogImageUrl],
+        ? `${collection.description} - packed by GeoPack Manager`
+        : `Just launch on @vibedotmarket packed by GeopAck Manager`,
     },
   };
 }
@@ -55,7 +48,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SharePage({ params }: Props) {
   // Auto-redirect to actual collection with referral
   const { slug } = await params;
-  const referralCode =
-    process.env.NEXT_PUBLIC_VIBEMARKET_REFERRAL || "C8475MDMBEAM";
-  redirect(`https://vibechain.com/market/${slug}?ref=${referralCode}`);
+  redirect(`https://vibechain.com/market/${slug}?ref=${REFERRAL_CODE}`);
 }

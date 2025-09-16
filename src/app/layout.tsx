@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { League_Spartan, Sanchez } from "next/font/google";
 import { Web3Provider } from "@/providers/web3-provider";
 import { Header } from "@/components/Header";
+import { Analytics } from "@vercel/analytics";
 import "./globals.css";
 
 const leagueSpartan = League_Spartan({
@@ -34,6 +35,7 @@ export default function RootLayout({
         <Web3Provider>
           <Header />
           {children}
+          <Analytics />
         </Web3Provider>
       </body>
     </html>

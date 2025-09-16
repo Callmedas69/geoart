@@ -32,7 +32,7 @@ export async function getCollectionBySlug(slug: string): Promise<Collection | nu
     const collectionName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     return {
       name: collectionName,
-      description: `Open ${collectionName} booster packs on VibeChain`,
+      description: `Open ${collectionName} booster packs on VibeMarket`,
       slug: slug
     };
     
@@ -43,7 +43,7 @@ export async function getCollectionBySlug(slug: string): Promise<Collection | nu
     const collectionName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     return {
       name: collectionName,
-      description: `Open ${collectionName} booster packs on VibeChain`,
+      description: `Open ${collectionName} booster packs on VibeMarket`,
       slug: slug
     };
   }
