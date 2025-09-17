@@ -51,10 +51,10 @@ export const DirectVibeUploader: React.FC = () => {
 
   // KISS: Simple step definition
   const steps = [
-    { key: "connect", label: "Connect Wallet" },
+    { key: "connect", label: "Connect & Auth" },
     { key: "upload", label: "Upload Files" },
-    { key: "details", label: "Collection Details" },
-    { key: "deploy", label: "Deploy Contract" },
+    { key: "details", label: "Card Details" },
+    { key: "deploy", label: "Packing your card" },
   ];
 
   // KISS: Memoized handler functions for performance
@@ -251,10 +251,7 @@ export const DirectVibeUploader: React.FC = () => {
                     ) : (
                       <>
                         <div className="w-4 h-4 border-black border-1" />
-                        <span>
-                          Connect your wallet and authenticate to start
-                          uploading your collection.
-                        </span>
+                        <span>Ready ?</span>
                       </>
                     )}
                   </div>
@@ -289,7 +286,7 @@ export const DirectVibeUploader: React.FC = () => {
                 <p>UPLOAD FILES</p>
                 <button
                   onClick={() => setShowSpecModal(true)}
-                  className="text-sm font-normal text-black hover:text-gray-600 underline transition-colors"
+                  className="text-sm font-normal text-black underline transition-colors hover:text-gray-600"
                 >
                   How it works
                 </button>
