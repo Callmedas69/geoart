@@ -12,7 +12,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useAccount } from "wagmi";
-import { useVibeContractDeployment } from "@/hooks/useVibeContractDeployment";
+import { useVibeWrapperDeployment } from "@/hooks/useVibeWrapperDeployment";
 import { generateContractConfig } from "@/constants/vibeConfig";
 import { SuccessModal } from "./SuccessModal";
 import { BuyModal } from "@/components/BuyFunction";
@@ -58,15 +58,14 @@ export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
   const {
     deployCollection,
     isDeploying,
-    deploymentProgress,
-    deploymentResult,
-    reset,
-  } = useVibeContractDeployment();
+    contractFee, // New: current fee from contract
+  } = useVibeWrapperDeployment();
 
   const [currentStep, setCurrentStep] = useState<
     "draft" | "deploy" | "confirm" | "ready" | "complete"
   >("draft");
   const [draftResult, setDraftResult] = useState<any>(null);
+  const [deploymentResult, setDeploymentResult] = useState<any>(null);
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCheckingReady, setIsCheckingReady] = useState(false);
@@ -268,6 +267,7 @@ export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
         throw new Error(deployResult.error || "Contract deployment failed");
       }
 
+      setDeploymentResult(deployResult);
       setCurrentStep("confirm");
 
       // Step 3: Proceed to confirmation with draftData directly (no state dependency)
