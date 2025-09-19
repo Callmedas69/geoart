@@ -355,6 +355,13 @@ export const VibeFileUploadNew: React.FC<VibeFileUploadNewProps> = ({
         currentFile: "",
       });
 
+      // Check wallet mismatch first
+      const storedAddress = localStorage.getItem('vibeAuthAddress');
+      const currentAddress = vibeAuth.address;
+      if (storedAddress && currentAddress && currentAddress !== storedAddress) {
+        throw new Error(`Please switch back to your authenticated wallet: ${storedAddress.substring(0, 6)}...${storedAddress.slice(-4)}`);
+      }
+
       // Authenticate if needed
       let authToken = vibeAuth.getToken();
       if (!authToken) {

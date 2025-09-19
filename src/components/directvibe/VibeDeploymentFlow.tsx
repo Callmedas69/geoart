@@ -132,6 +132,13 @@ export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
       return;
     }
 
+    // Check wallet mismatch first
+    const storedAddress = localStorage.getItem('vibeAuthAddress');
+    if (storedAddress && address && address !== storedAddress) {
+      setError(`Please switch back to your authenticated wallet: ${storedAddress.substring(0, 6)}...${storedAddress.slice(-4)}`);
+      return;
+    }
+
     // Authenticate if needed
     console.log("🔍 Pre-auth check:", { token: token ? `${token.substring(0, 20)}...` : "null", isAuthenticated });
     let authToken = token;

@@ -43,6 +43,7 @@ export const useVibeAuth = () => {
 
     // Clear localStorage first (fresh start on every authenticate click)
     localStorage.removeItem('vibeAuthToken');
+    localStorage.removeItem('vibeAuthAddress');
     console.log('🗑️ Cleared localStorage before authentication');
 
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
@@ -93,7 +94,8 @@ export const useVibeAuth = () => {
 
         // Save to localStorage (match Vibe.Market pattern)
         localStorage.setItem('vibeAuthToken', token);
-        console.log('💾 Saved vibeAuthToken to localStorage');
+        localStorage.setItem('vibeAuthAddress', address);
+        console.log('💾 Saved vibeAuthToken and address to localStorage');
 
         setAuthState({
           isAuthenticated: true,
@@ -121,7 +123,8 @@ export const useVibeAuth = () => {
   const logout = useCallback(() => {
     // Clear localStorage (match Vibe.Market pattern)
     localStorage.removeItem('vibeAuthToken');
-    console.log('🗑️ Cleared vibeAuthToken from localStorage');
+    localStorage.removeItem('vibeAuthAddress');
+    console.log('🗑️ Cleared vibeAuthToken and address from localStorage');
 
     setAuthState({
       isAuthenticated: false,
