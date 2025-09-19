@@ -334,7 +334,6 @@ export const DirectVibeUploader: React.FC = () => {
               <VibeDeploymentFlow
                 collectionData={stepData.collectionData!}
                 uploadedFiles={stepData.files}
-                authToken={stepData.authToken || ""}
                 onComplete={(result) => handleStepComplete(3, result)}
                 onBack={handleStepBack}
               />

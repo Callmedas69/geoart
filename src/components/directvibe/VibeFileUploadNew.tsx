@@ -355,9 +355,14 @@ export const VibeFileUploadNew: React.FC<VibeFileUploadNewProps> = ({
         currentFile: "",
       });
 
-      const authToken = vibeAuth.getToken();
+      // Authenticate if needed
+      let authToken = vibeAuth.getToken();
       if (!authToken) {
-        throw new Error("No authentication token available");
+        console.log("🚀 No token found in VibeFileUploadNew, calling authenticate()...");
+        authToken = await vibeAuth.authenticate();
+        if (!authToken) {
+          throw new Error("Please connect wallet and authenticate");
+        }
       }
 
       const uploadedFiles: UploadedFile[] = [];

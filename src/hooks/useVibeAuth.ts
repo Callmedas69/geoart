@@ -13,11 +13,26 @@ interface AuthState {
 export const useVibeAuth = () => {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const [authState, setAuthState] = useState<AuthState>({
-    isAuthenticated: false,
-    token: null,
-    loading: false,
-    error: null
+  const [authState, setAuthState] = useState<AuthState>(() => {
+    // Check localStorage for existing token (match Vibe.Market pattern)
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('vibeAuthToken');
+      if (stored) {
+        console.log('✅ Found existing vibeAuthToken in localStorage');
+        return {
+          isAuthenticated: true,
+          token: stored,
+          loading: false,
+          error: null
+        };
+      }
+    }
+    return {
+      isAuthenticated: false,
+      token: null,
+      loading: false,
+      error: null
+    };
   });
 
   const authenticate = useCallback(async (): Promise<string | null> => {
@@ -25,6 +40,10 @@ export const useVibeAuth = () => {
       setAuthState(prev => ({ ...prev, error: 'Wallet not connected' }));
       return null;
     }
+
+    // Clear localStorage first (fresh start on every authenticate click)
+    localStorage.removeItem('vibeAuthToken');
+    console.log('🗑️ Cleared localStorage before authentication');
 
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
@@ -72,6 +91,10 @@ export const useVibeAuth = () => {
         const token = authResult.data.accessToken;
         console.log('✅ Successfully obtained access token:', token.substring(0, 50) + '...');
 
+        // Save to localStorage (match Vibe.Market pattern)
+        localStorage.setItem('vibeAuthToken', token);
+        console.log('💾 Saved vibeAuthToken to localStorage');
+
         setAuthState({
           isAuthenticated: true,
           token,
@@ -96,6 +119,10 @@ export const useVibeAuth = () => {
   }, [address, signMessageAsync]);
 
   const logout = useCallback(() => {
+    // Clear localStorage (match Vibe.Market pattern)
+    localStorage.removeItem('vibeAuthToken');
+    console.log('🗑️ Cleared vibeAuthToken from localStorage');
+
     setAuthState({
       isAuthenticated: false,
       token: null,

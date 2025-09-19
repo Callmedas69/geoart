@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useVibeWrapperDeployment } from "@/hooks/useVibeWrapperDeployment";
+import { useVibeAuth } from "@/hooks/useVibeAuth";
 import { generateContractConfig } from "@/constants/vibeConfig";
 import { SuccessModal } from "./SuccessModal";
 import { BuyModal } from "@/components/BuyFunction";
@@ -42,7 +43,6 @@ interface UploadedFile {
 interface VibeDeploymentFlowProps {
   collectionData: CollectionData;
   uploadedFiles: UploadedFile[];
-  authToken: string;
   onComplete: (result: any) => void;
   onBack: () => void;
 }
@@ -50,16 +50,24 @@ interface VibeDeploymentFlowProps {
 export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
   collectionData,
   uploadedFiles,
-  authToken,
   onComplete,
   onBack,
 }) => {
   const { address, isConnected } = useAccount();
+  const { token, authenticate, isAuthenticated } = useVibeAuth();
   const {
     deployCollection,
     isDeploying,
     contractFee, // New: current fee from contract
   } = useVibeWrapperDeployment();
+
+  // Debug: Log auth state
+  console.log("🔍 VibeDeploymentFlow Auth State:", {
+    token: token ? `${token.substring(0, 20)}...` : "null",
+    isAuthenticated,
+    address,
+    isConnected
+  });
 
   const [currentStep, setCurrentStep] = useState<
     "draft" | "deploy" | "confirm" | "ready" | "complete"
@@ -122,6 +130,22 @@ export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
     if (!isConnected || !address) {
       setError("Please connect your wallet first");
       return;
+    }
+
+    // Authenticate if needed
+    console.log("🔍 Pre-auth check:", { token: token ? `${token.substring(0, 20)}...` : "null", isAuthenticated });
+    let authToken = token;
+    if (!authToken) {
+      console.log("🚀 No token found, calling authenticate()...");
+      authToken = await authenticate();
+      console.log("🔍 Post-auth result:", { authToken: authToken ? `${authToken.substring(0, 20)}...` : "null" });
+      if (!authToken) {
+        console.error("❌ Authentication failed - no token returned");
+        setError("Please connect wallet and authenticate");
+        return;
+      }
+    } else {
+      console.log("✅ Using existing token:", `${authToken.substring(0, 20)}...`);
     }
 
     try {
@@ -271,7 +295,7 @@ export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
       setCurrentStep("confirm");
 
       // Step 3: Proceed to confirmation with draftData directly (no state dependency)
-      await confirmDeploymentWithData(deployResult.txHash, draftData);
+      await confirmDeploymentWithData(deployResult.txHash, draftData, authToken);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed");
       setIsCreatingDraft(false);
@@ -279,7 +303,7 @@ export const VibeDeploymentFlow: React.FC<VibeDeploymentFlowProps> = ({
   };
 
   // Step 3: Confirm with Vibe.Market - No state dependency, use passed data
-  const confirmDeploymentWithData = async (txHash: string, draftData: any) => {
+  const confirmDeploymentWithData = async (txHash: string, draftData: any, authToken: string) => {
     try {
       setIsConfirming(true);
       setError("");
