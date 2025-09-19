@@ -3,7 +3,6 @@
 import { CustomConnectButton } from "@/components/CustomConnectButton";
 import Link from "next/link";
 import MenuBar from "./MenuBar";
-import { VibeMarketReferralButton } from "./VibeMarketReferralButton";
 
 export function Header() {
   return (
@@ -18,6 +17,12 @@ export function Header() {
               </h1>
             </Link>
           </div>
+
+          {/* Navigation - Centered */}
+          <div className="flex items-center justify-center flex-1">
+            <MenuBar />
+          </div>
+
           {/* Wallet Connect */}
           <div className="flex items-center">
             <CustomConnectButton />

@@ -1,8 +1,10 @@
 export const siteMenu = [
-  
   {
-    label: "Gallery",
-    href: "/gallery",
+    label: "HOME",
+    href: "/",
   },
-  
+  {
+    label: "GEOPACK MANAGER",
+    href: "/geopack-manager",
+  },
 ];
