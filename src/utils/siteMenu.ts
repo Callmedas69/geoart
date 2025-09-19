@@ -4,7 +4,7 @@ export const siteMenu = [
     href: "/",
   },
   {
-    label: "GEOPACK MANAGER",
+    label: "MANAGER",
     href: "/geopack-manager",
   },
 ];
