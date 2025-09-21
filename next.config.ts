@@ -66,12 +66,12 @@ const nextConfig: NextConfig = {
       {
         source: "/",
         has: [{ type: "host", value: "painter.geoart.gallery" }],
-        destination: "/painter",
+        destination: "/painter/",
       },
       {
-        source: "/",
-        has: [{ type: "host", value: "museum.geoart.gallery" }],
-        destination: "/museum",
+        source: "/:path",
+        has: [{ type: "host", value: "painter.geoart.gallery" }],
+        destination: "/painter/:path",
       },
     ];
   },
