@@ -59,6 +59,23 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi'],
   },
+
+  // 👇 Add rewrites for subdomains
+  async rewrites() {
+    return [
+      {
+        source: "/",
+        has: [{ type: "host", value: "painter.geoart.gallery" }],
+        destination: "/painter",
+      },
+      {
+        source: "/",
+        has: [{ type: "host", value: "museum.geoart.gallery" }],
+        destination: "/museum",
+      },
+    ];
+  },
+  
 };
 
 export default nextConfig;
