@@ -60,22 +60,17 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi'],
   },
 
-  // 👇 Add rewrites for subdomains
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/",
-  //       has: [{ type: "host", value: "painter.geoart.studio" }],
-  //       destination: "/painter",
-  //     },
-  //     {
-  //       source: "/:path*",
-  //       has: [{ type: "host", value: "painter.geoart.studio" }],
-  //       destination: "/painter/:path*",
-  //     },
-  //   ];
-  // },
-  
+  // Subdomain routing for painter.geoart.studio
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'painter.geoart.studio' }],
+        destination: '/painter/:path*',
+      },
+    ];
+  },
+
 };
 
 export default nextConfig;
