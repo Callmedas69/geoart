@@ -61,20 +61,20 @@ const nextConfig: NextConfig = {
   },
 
   // 👇 Add rewrites for subdomains
-  async rewrites() {
-    return [
-      {
-        source: "/",
-        has: [{ type: "host", value: "painter.geoart.gallery" }],
-        destination: "/painter",
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "painter.geoart.gallery" }],
-        destination: "/painter/:path*",
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/",
+  //       has: [{ type: "host", value: "painter.geoart.studio" }],
+  //       destination: "/painter",
+  //     },
+  //     {
+  //       source: "/:path*",
+  //       has: [{ type: "host", value: "painter.geoart.studio" }],
+  //       destination: "/painter/:path*",
+  //     },
+  //   ];
+  // },
   
 };
 
