@@ -47,7 +47,7 @@ export function Header() {
           </div>
 
           {/* Bottom Row: Navigation */}
-          <div className="pb-3 border-t border-border/50">
+          <div className="pb-3">
             <div className="pt-3">
               <MenuBar />
             </div>
