@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,10 +14,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`Checking collection ready status for contract: ${contractAddress}`);
+    logger.info(`Checking collection ready status for contract: ${contractAddress}`);
 
+    const vibeChainApiKey = process.env.VIBECHAIN_DEFAULT_API_KEY || 'vibechain-default-5477272';
     const headers: Record<string, string> = {
-      'api-key': 'vibechain-default-5477272',
+      'api-key': vibeChainApiKey,
       'Content-Type': 'application/json',
       'x-bypass-image-proxy': 'true',
     };
@@ -31,14 +33,14 @@ export async function GET(request: NextRequest) {
     );
 
     const data = await vibeResponse.json();
-    console.log('Collection ready status response:', data);
+    logger.dev('Collection ready status response:', data);
 
     if (!vibeResponse.ok) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: data.message || 'Failed to check collection ready status',
-          data 
+          data
         },
         { status: vibeResponse.status }
       );
@@ -47,7 +49,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data });
 
   } catch (error) {
-    console.error('Collection ready status check error:', error);
+    logger.error('Collection ready status check error:', error);
     return NextResponse.json(
       { success: false, message: 'Internal server error', error: error instanceof Error ? error.message : String(error) },
       { status: 500 }

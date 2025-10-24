@@ -11,7 +11,7 @@ interface Collection {
 export async function getCollectionBySlug(slug: string): Promise<Collection | null> {
   try {
     // Fetch real collection data from contract-info API using slug
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://geoart.gallery';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://geoart.studio';
     const response = await fetch(`${baseUrl}/api/contract-info?contractAddress=${slug}`);
     
     if (response.ok) {

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
-    console.log('📡 Confirm Proxy: Received request to confirm metadata draft');
-    console.log('📋 Confirm Proxy: Request body:', body);
+
+    logger.info('📡 Confirm Proxy: Received request to confirm metadata draft');
+    logger.dev('📋 Confirm Proxy: Request body:', body);
 
     // Get API key from environment
     const apiKey = process.env.VIBEMARKET_API_KEY;
@@ -16,11 +17,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🔑 Confirm Proxy: Using API key:', apiKey.substring(0, 8) + '...');
+    logger.sensitive('🔑 Confirm Proxy: Using API key:', apiKey);
 
     // Prepare authentication headers (using real Vibe.Market flow)
+    const vibeChainApiKey = process.env.VIBECHAIN_DEFAULT_API_KEY || 'vibechain-default-5477272';
     const headers: Record<string, string> = {
-      'api-key': 'vibechain-default-5477272', // The correct API key for Vibe.Market
+      'api-key': vibeChainApiKey,
       'Content-Type': 'application/json',
       'x-bypass-image-proxy': 'true',
     };
@@ -29,11 +31,11 @@ export async function POST(request: NextRequest) {
     const authHeader = request.headers.get('Authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
       headers['Authorization'] = authHeader;
-      console.log('🔐 Confirm Proxy: JWT Bearer token found in request headers');
+      logger.info('🔐 Confirm Proxy: JWT Bearer token found in request headers');
       const token = authHeader.replace('Bearer ', '');
-      console.log('🔑 Confirm Proxy: Using JWT token:', token.substring(0, 50) + '...');
+      logger.sensitive('🔑 Confirm Proxy: Using JWT token:', token);
     } else {
-      console.log('⚠️ Confirm Proxy: No Authorization header found - metadata API may fail');
+      logger.warn('⚠️ Confirm Proxy: No Authorization header found - metadata API may fail');
     }
 
     // Forward request to Vibe.Market confirm API
@@ -43,21 +45,21 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    console.log('📄 Confirm Proxy: Vibe API response status:', vibeResponse.status);
-    console.log('📄 Confirm Proxy: Vibe API response headers:', Object.fromEntries(vibeResponse.headers.entries()));
+    logger.info('📄 Confirm Proxy: Vibe API response status:', vibeResponse.status);
+    logger.dev('📄 Confirm Proxy: Vibe API response headers:', Object.fromEntries(vibeResponse.headers.entries()));
 
     // Get response as text first to see what we're getting
     const responseText = await vibeResponse.text();
-    console.log('📄 Confirm Proxy: Raw response text:', responseText.substring(0, 500) + '...');
+    logger.dev('📄 Confirm Proxy: Raw response text:', responseText.substring(0, 500) + '...');
 
     let responseData;
     try {
       // Try to parse as JSON
       responseData = JSON.parse(responseText);
-      console.log('📄 Confirm Proxy: Parsed JSON response:', responseData);
+      logger.dev('📄 Confirm Proxy: Parsed JSON response:', responseData);
     } catch (parseError) {
-      console.log('⚠️ Confirm Proxy: Response is not JSON, treating as text');
-      responseData = { 
+      logger.warn('⚠️ Confirm Proxy: Response is not JSON, treating as text');
+      responseData = {
         rawResponse: responseText.substring(0, 1000),
         contentType: vibeResponse.headers.get('content-type'),
         isHTML: responseText.includes('<!DOCTYPE') || responseText.includes('<html>'),
@@ -76,11 +78,11 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error('❌ Confirm Proxy: Error calling Vibe confirm API:', error);
+    logger.error('❌ Confirm Proxy: Error calling Vibe confirm API:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
@@ -89,10 +91,21 @@ export async function POST(request: NextRequest) {
 
 // Handle preflight requests
 export async function OPTIONS(request: NextRequest) {
+  const allowedOrigins = [
+    process.env.NEXT_PUBLIC_APP_URL || 'https://geoart.studio',
+    'https://painter.geoart.studio',
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+  ].filter(Boolean) as string[];
+
+  const origin = request.headers.get('origin') || '';
+  const allowOrigin = allowedOrigins.includes(origin)
+    ? origin
+    : allowedOrigins[0];
+
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': allowOrigin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },

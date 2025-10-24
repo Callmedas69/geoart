@@ -8,6 +8,10 @@ export const siteMenu = [
     href: "/geopack-manager",
   },
   {
+    label: "COMPETITION",
+    href: "https://challenge.geoart.studio",
+  },
+  {
     label: "THE PAINTER",
     href: "/painter",
   },

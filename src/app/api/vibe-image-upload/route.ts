@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/logger';
 
 export async function POST(req: NextRequest) {
-  console.log('🖼️ Vibe Image Upload: Processing direct image upload to Vibe.Market');
-  
+  logger.info('🖼️ Vibe Image Upload: Processing direct image upload to Vibe.Market');
+
   try {
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     const jwtToken = authHeader.substring(7);
-    console.log('🔐 Vibe Image Upload: JWT Bearer token found:', jwtToken.substring(0, 20) + '...');
+    logger.sensitive('🔐 Vibe Image Upload: JWT Bearer token found:', jwtToken);
 
     // Parse the form data
     const formData = await req.formData();
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log('📋 Vibe Image Upload: Processing file:', {
+    logger.info('📋 Vibe Image Upload: Processing file:', {
       name: image.name,
       size: image.size,
       type: image.type
@@ -39,116 +40,117 @@ export async function POST(req: NextRequest) {
 
     // Use the actual Vibe.Market image upload endpoint from research
     const VIBE_UPLOAD_URL = 'https://build.wield.xyz/image/upload';
-    
-    console.log('🔑 Vibe Image Upload: Using real Vibe.Market endpoint:', VIBE_UPLOAD_URL);
+
+    logger.dev('🔑 Vibe Image Upload: Using real Vibe.Market endpoint:', VIBE_UPLOAD_URL);
 
     // Call Vibe.Market's actual upload endpoint
+    const vibeChainApiKey = process.env.VIBECHAIN_DEFAULT_API_KEY || 'vibechain-default-5477272';
     const vibeResponse = await fetch(VIBE_UPLOAD_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
-        'api-key': 'vibechain-default-5477272',
+        'api-key': vibeChainApiKey,
         // Don't set Content-Type - let the browser set it with boundary for multipart/form-data
       },
       body: vibeFormData
     });
 
-    console.log('📄 Vibe Image Upload: Vibe API response status:', vibeResponse.status);
-    console.log('📄 Vibe Image Upload: Vibe API response headers:', Object.fromEntries(vibeResponse.headers.entries()));
+    logger.info('📄 Vibe Image Upload: Vibe API response status:', vibeResponse.status);
+    logger.dev('📄 Vibe Image Upload: Vibe API response headers:', Object.fromEntries(vibeResponse.headers.entries()));
 
     if (!vibeResponse.ok) {
       const errorText = await vibeResponse.text();
-      console.error('❌ Vibe Image Upload: API call failed with status:', vibeResponse.status);
-      console.error('❌ Vibe Image Upload: Error response body:', errorText);
-      console.error('❌ Vibe Image Upload: Request details - URL:', VIBE_UPLOAD_URL);
-      console.error('❌ Vibe Image Upload: Request details - JWT token (first 20 chars):', jwtToken.substring(0, 20) + '...');
+      logger.error('❌ Vibe Image Upload: API call failed with status:', vibeResponse.status);
+      logger.dev('❌ Vibe Image Upload: Error response body:', errorText);
+      logger.dev('❌ Vibe Image Upload: Request details - URL:', VIBE_UPLOAD_URL);
+      logger.sensitive('❌ Vibe Image Upload: Request details - JWT token:', jwtToken);
       throw new Error(`Vibe.Market API returned ${vibeResponse.status}: ${errorText}`);
     }
 
     const vibeData = await vibeResponse.json();
-    console.log('📄 Vibe Image Upload: Vibe API response:', JSON.stringify(vibeData, null, 2));
-    console.log('📄 Vibe Image Upload: Response keys:', Object.keys(vibeData));
-    console.log('📄 Vibe Image Upload: Response type:', typeof vibeData);
+    logger.dev('📄 Vibe Image Upload: Vibe API response:', JSON.stringify(vibeData, null, 2));
+    logger.dev('📄 Vibe Image Upload: Response keys:', Object.keys(vibeData));
+    logger.dev('📄 Vibe Image Upload: Response type:', typeof vibeData);
 
     // Extract the image URL from Vibe.Market's response - try multiple possible structures
     let imageUrl = null;
     let imageId = null;
-    
+
     // Log the structure we're examining
-    console.log('🔍 Examining response structure for image URL...');
-    
+    logger.dev('🔍 Examining response structure for image URL...');
+
     // Try different response structures with detailed logging
     if (vibeData.image?.result?.variants?.[0]) {
       // Structure: { image: { result: { variants: [...], id: "..." } } }
-      console.log('✅ Found image.result.variants structure');
+      logger.dev('✅ Found image.result.variants structure');
       imageUrl = vibeData.image.result.variants[0];
       imageId = vibeData.image.result.id;
     } else if (vibeData.result?.variants?.[0]) {
       // Structure: { result: { variants: [...], id: "..." } }
-      console.log('✅ Found result.variants structure');
+      logger.dev('✅ Found result.variants structure');
       imageUrl = vibeData.result.variants[0];
       imageId = vibeData.result.id;
     } else if (vibeData.variants?.[0]) {
       // Structure: { variants: [...], id: "..." }
-      console.log('✅ Found top-level variants structure');
+      logger.dev('✅ Found top-level variants structure');
       imageUrl = vibeData.variants[0];
       imageId = vibeData.id;
     } else if (vibeData.url || vibeData.imageUrl) {
       // Structure: { url: "..." } or { imageUrl: "..." }
-      console.log('✅ Found direct URL structure');
+      logger.dev('✅ Found direct URL structure');
       imageUrl = vibeData.url || vibeData.imageUrl;
       imageId = vibeData.id || 'unknown';
     } else if (vibeData.success && vibeData.result?.url) {
       // Structure: { success: true, result: { url: "...", id: "..." } }
-      console.log('✅ Found success.result.url structure');
+      logger.dev('✅ Found success.result.url structure');
       imageUrl = vibeData.result.url;
       imageId = vibeData.result.id || 'unknown';
     } else if (vibeData.data?.url) {
       // Structure: { data: { url: "...", id: "..." } }
-      console.log('✅ Found data.url structure');
+      logger.dev('✅ Found data.url structure');
       imageUrl = vibeData.data.url;
       imageId = vibeData.data.id || 'unknown';
     } else {
       // Check for other possible structures
-      console.log('🔍 Checking for other possible structures...');
-      console.log('🔍 vibeData.image exists:', !!vibeData.image);
+      logger.dev('🔍 Checking for other possible structures...');
+      logger.dev('🔍 vibeData.image exists:', !!vibeData.image);
       if (vibeData.image) {
-        console.log('🔍 vibeData.image keys:', Object.keys(vibeData.image));
-        console.log('🔍 vibeData.image content:', JSON.stringify(vibeData.image, null, 2));
+        logger.dev('🔍 vibeData.image keys:', Object.keys(vibeData.image));
+        logger.dev('🔍 vibeData.image content:', JSON.stringify(vibeData.image, null, 2));
       }
-      console.log('🔍 vibeData.result exists:', !!vibeData.result);
+      logger.dev('🔍 vibeData.result exists:', !!vibeData.result);
       if (vibeData.result) {
-        console.log('🔍 vibeData.result keys:', Object.keys(vibeData.result));
-        console.log('🔍 vibeData.result content:', JSON.stringify(vibeData.result, null, 2));
+        logger.dev('🔍 vibeData.result keys:', Object.keys(vibeData.result));
+        logger.dev('🔍 vibeData.result content:', JSON.stringify(vibeData.result, null, 2));
       }
-      console.log('🔍 vibeData.data exists:', !!vibeData.data);
+      logger.dev('🔍 vibeData.data exists:', !!vibeData.data);
       if (vibeData.data) {
-        console.log('🔍 vibeData.data keys:', Object.keys(vibeData.data));
-        console.log('🔍 vibeData.data content:', JSON.stringify(vibeData.data, null, 2));
+        logger.dev('🔍 vibeData.data keys:', Object.keys(vibeData.data));
+        logger.dev('🔍 vibeData.data content:', JSON.stringify(vibeData.data, null, 2));
       }
-      
+
       // Also check for any field that might contain a URL-like string
       const flattenedData = JSON.stringify(vibeData);
       const possibleUrls = flattenedData.match(/https?:\/\/[^\s"]+/g);
       if (possibleUrls && possibleUrls.length > 0) {
-        console.log('🔍 Found possible URLs in response:', possibleUrls);
+        logger.dev('🔍 Found possible URLs in response:', possibleUrls);
         // Try to find imagedelivery.net URLs which are common for Cloudflare
         const imagedeliveryUrl = possibleUrls.find(url => url.includes('imagedelivery.net'));
         if (imagedeliveryUrl) {
-          console.log('✅ Found imagedelivery.net URL, using as image URL');
+          logger.dev('✅ Found imagedelivery.net URL, using as image URL');
           imageUrl = imagedeliveryUrl.replace(/[",}]$/, ''); // Clean up any trailing characters
           imageId = 'extracted_' + Date.now();
         }
       }
     }
-    
+
     if (!imageUrl) {
-      console.error('❌ Vibe Image Upload: No image URL found in response structure');
-      console.error('❌ Full response for debugging:', JSON.stringify(vibeData, null, 2));
+      logger.error('❌ Vibe Image Upload: No image URL found in response structure');
+      logger.dev('❌ Full response for debugging:', JSON.stringify(vibeData, null, 2));
       throw new Error(`No image URL found in Vibe.Market response. Response keys: ${Object.keys(vibeData).join(', ')}. Full response logged above.`);
     }
 
-    console.log('✅ Vibe Image Upload: Successfully got image URL:', imageUrl);
+    logger.success('✅ Vibe Image Upload: Successfully got image URL:', imageUrl);
 
     // Return standardized response
     return NextResponse.json({
@@ -160,9 +162,9 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Vibe Image Upload: Error:', error);
-    console.error('❌ Vibe Image Upload: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
+    logger.error('❌ Vibe Image Upload: Error:', error);
+    logger.dev('❌ Vibe Image Upload: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
     // Return error information for debugging
     return NextResponse.json({
       success: false,

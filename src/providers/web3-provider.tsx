@@ -32,7 +32,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
           coolMode={false}
           appInfo={{
             appName: "GeoArt",
-            learnMoreUrl: "https://geoart.gallery",
+            learnMoreUrl: "https://geoart.studio",
           }}
         >
           {children}

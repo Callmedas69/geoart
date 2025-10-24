@@ -90,7 +90,11 @@ export const useVibeAuth = () => {
       if (authResult.success && authResult.data?.accessToken) {
         // Success! We have a valid JWT token
         const token = authResult.data.accessToken;
-        console.log('✅ Successfully obtained access token:', token.substring(0, 50) + '...');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Successfully obtained access token:', token.substring(0, 50) + '...');
+        } else {
+          console.log('✅ Successfully obtained access token');
+        }
 
         // Save to localStorage (match Vibe.Market pattern)
         localStorage.setItem('vibeAuthToken', token);
